@@ -114,12 +114,12 @@ def LevenshteinDistance(s, t):
     return min(LevenshteinDistance(s[0:len_s-1], t) + 1,LevenshteinDistance(s, t[0:len_t-1]) + 1,LevenshteinDistance(s[0:len_s-1], t[0:len_t-1]) + cost)
 
 connected_node_list=G.edges()
-def Qwerty_dist(word1,word2,threshold):
+def Qwerty_dist(word1,word2):
     #changing to lower case so that the comparision is regularized
     word1=word1.lower()
     word2=word2.lower()
     dist=0
-    #threshold=(min(len(word1),len(word2)))/3
+    threshold=(min(len(word1),len(word2)))/3
     if abs(len(word1)-len(word2)<threshold):
         for i in range(0,min(len(word1),len(word2))):
             if word1[i]==word2[i]:
@@ -144,7 +144,7 @@ def Qwerty_dist(word1,word2,threshold):
         print "The distance between %s and %s is %d" %(word1,word2,dist)
 
 # seeing sample runs 
-Qwerty_dist('ekta','keta',3)
+Qwerty_dist('ekta','keta')
 Qwerty_dist('ekta','seta')
 Qwerty_dist('ekta','setam')
 Qwerty_dist('ekta grover','sdfg')
