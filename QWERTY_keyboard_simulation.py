@@ -91,3 +91,60 @@ nx.draw_networkx_labels(G,pos,font_size=15,font_family='calibri',node_color='yel
 plt.axis('off')
 plt.savefig("finger_keying.png")
 plt.show() # display
+
+
+"""
+Base assumptions for the algorithm 
+<convert the words to lower case, as is the standard practice - can also convert it to upper case>
+1. Two words have more probabilty to be similar if the difference of their lengths does not exceed a threshold - we take this threshold as 1/3rd of the minimum of the two words keyed in
+2. Will use the LevenshteinDistance if the differnce in lenghts exceeds a threshold - meaning it must not be a typo, and we must find the regular distance metric
+"""
+
+def LevenshteinDistance(s, t):
+    len_s=len(s)
+    len_t=len(t)
+    if len_s == 0:
+        return len_t
+    if len_t == 0:
+        return len_s
+    if s[len_s-1] == t[len_t-1] :
+        cost = 0
+    else : 
+        cost =1 
+    return min(LevenshteinDistance(s[0:len_s-1], t) + 1,LevenshteinDistance(s, t[0:len_t-1]) + 1,LevenshteinDistance(s[0:len_s-1], t[0:len_t-1]) + cost)
+
+connected_node_list=G.edges()
+def Qwerty_dist(word1,word2,threshold):
+    #changing to lower case so that the comparision is regularized
+    word1=word1.lower()
+    word2=word2.lower()
+    dist=0
+    #threshold=(min(len(word1),len(word2)))/3
+    if abs(len(word1)-len(word2)<threshold):
+        for i in range(0,min(len(word1),len(word2))):
+            if word1[i]==word2[i]:
+                pass
+            elif ((word1[i],word2[i]) or (word2[i],word1[i])) in connected_node_list :
+                #meaning the intention of the user must have been same and it's indeed a typo
+                pass
+                #word2[i]==word1[i]
+            elif ((word1[i],word2[i]) or (word2[i],word1[i])) not in connected_node_list :
+            #looks like the characters in the words just got reversed !
+                if i<=min(len(word1),len(word2))-2 :
+                    if word1[i]==word2[i+1] and word1[i+1]==word2[i]:
+                        pass
+                else: 
+                    dist=dist+1
+    #if the differnce in lengths exceeds then call the regular levenshein distance
+    else :
+        dist=LevenshteinDistance(word1,word2)
+    if dist ==0:
+        print "The words are identical"
+    else :
+        print "The distance between %s and %s is %d" %(word1,word2,dist)
+
+# seeing sample runs 
+Qwerty_dist('ekta','keta',3)
+Qwerty_dist('ekta','seta')
+Qwerty_dist('ekta','setam')
+Qwerty_dist('ekta grover','sdfg')
